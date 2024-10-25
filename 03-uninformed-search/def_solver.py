@@ -22,7 +22,6 @@ from operator import itemgetter
 
 infinity = float('inf')
 
-
 class SimpleProblemSolvingAgentProgram:
 
     """Abstract framework for a problem-solving agent. [Figure 3.1]"""
@@ -35,8 +34,8 @@ class SimpleProblemSolvingAgentProgram:
         self.seq = []
 
     def __call__(self, percept):
-        """ Formulate a goal and problem, then
-        search for a sequence of actions to solve it."""
+        """Formulate a goal and problem, then
+        search for a sequence of actions to solve it"""
         self.state = self.update_state(self.state, percept)
         if not self.seq:
             goal = self.formulate_goal(self.state)
@@ -62,7 +61,7 @@ class SimpleProblemSolvingAgentProgram:
 def tree_search(problem, frontier):
     """Search through the successors of a problem to find a goal.
     The argument frontier should be an empty queue.
-    Don't worry about repeated paths to a state. [Figure 3.7]"""
+    Don't worry about repeated paths to a state"""
     frontier.append(Node(problem.initial))
     while frontier:
         node = frontier.pop()
@@ -75,7 +74,7 @@ def tree_search(problem, frontier):
 def graph_search(problem, frontier):
     """Search through the successors of a problem to find a goal.
     The argument frontier should be an empty queue.
-    If two paths reach a state, only use the first one. [Figure 3.7]"""
+    If two paths reach a state, only use the first one"""
     frontier.append(Node(problem.initial))
     explored = set()
     while frontier:

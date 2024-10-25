@@ -1,6 +1,4 @@
 import pytest
-from def_problem import *
-from def_solver import *
 from def_search import *
 
 
@@ -21,7 +19,6 @@ def test_breadth_first_search():
 
 
 def test_best_first_graph_search():
-    # uniform_cost_search and astar_search test it indirectly
     assert best_first_graph_search(
         romania_problem,
         lambda node: node.state).solution() == ['Sibiu', 'Fagaras', 'Bucharest']

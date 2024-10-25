@@ -5,13 +5,6 @@ from utils import (
     distance, vector_add
 )
 
-from collections import defaultdict
-import math
-import random
-import sys
-import bisect
-from operator import itemgetter
-
 
 infinity = float('inf')
 
@@ -103,11 +96,9 @@ class Node:
                 for action in problem.actions(self.state)]
 
     def child_node(self, problem, action):
-        """[Figure 3.10]"""
         next = problem.result(self.state, action)
         return Node(next, self, action,
-                    problem.path_cost(self.path_cost, self.state,
-                                      action, next))
+                    problem.path_cost(self.path_cost, self.state, action, next))
 
     def solution(self):
         """Return the sequence of actions to go from the root to this node."""
@@ -121,11 +112,6 @@ class Node:
             node = node.parent
         return list(reversed(path_back))
 
-    # We want for a queue of nodes in breadth_first_search or
-    # astar_search to have no duplicated states, so we treat nodes
-    # with the same state as equal. [Problem: this may not be what you
-    # want in other contexts.]
-
     def __eq__(self, other):
         return isinstance(other, Node) and self.state == other.state
 
@@ -136,10 +122,9 @@ class Node:
 # ______________________________________________________________________________
 # Graphs and Graph Problems
 
-
 class Graph:
 
-    """A graph connects nodes (verticies) by edges (links).  Each edge can also
+    """A graph connects nodes (vertices) by edges (links).  Each edge can also
     have a length associated with it.  The constructor call is something like:
         g = Graph({'A': {'B': 1, 'C': 2})
     this makes a graph with 3 nodes, A, B, and C, with an edge of length 1 from
@@ -224,7 +209,6 @@ romania_map.locations = dict(
 
 
 class GraphProblem(Problem):
-
     """The problem of searching a graph from one node to another."""
 
     def __init__(self, initial, goal, graph):
