@@ -1,8 +1,6 @@
 
-import math
 import pygame
 from timeit import default_timer as timer
-from queue import PriorityQueue
 
 
 COLOUR_EMPTY_NODE = (176, 192, 238)
@@ -90,21 +88,6 @@ class Node:
         return self.row < other.row
 
 
-def manhattan_distance(start, end):
-    x1, y1 = start
-    x2, y2 = end
-    return abs(x1 - x2) + abs(y1 - y2)
-
-def euclidean_distance(start, goal):
-    x1, y1 = start
-    x2, y2 = goal
-    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-
-def chebyshev_distance(start, goal):
-    x1, y1 = start
-    x2, y2 = goal
-    return max(abs(x2 - x1), abs(y2 - y1))
-
 def reconstruct_path(node_path, current, draw, start_time):
     path_count = 0
 
@@ -115,25 +98,17 @@ def reconstruct_path(node_path, current, draw, start_time):
         draw()
     end_time = timer()
     working_time = end_time - start_time
-    pygame.display.set_caption(f'Time of A* Algorithm: {format(working_time, ".2f")}s | '
+    pygame.display.set_caption(f'Time of DFS Algorithm: {format(working_time, ".2f")}s | '
                                f'Solution: {path_count + 1} nodes')
 
 
-def a_star(draw, grid, start_node, end_node, start_time):
-    frontier = PriorityQueue()
-    insertion_counter = 0
-    frontier.put((0, insertion_counter, start_node))
+def dfs(draw, start_node, end_node, start_time):
+    stack = [start_node]
     parent_of = {}
-    g_score = {current_neighbour: float("inf") for row in grid for current_neighbour in row}
-    g_score[start_node] = 0
+    visited = {start_node}
 
-    f_score = {current_neighbour: float("inf") for row in grid for current_neighbour in row}
-    f_score[start_node] = manhattan_distance(start_node.get_pos_index(), end_node.get_pos_index())
-
-    frontier_set = {start_node}
-    while not frontier.empty():
-        current_node = frontier.get()[2]
-        frontier_set.remove(current_node)
+    while stack:
+        current_node = stack.pop()
 
         if current_node != start_node:
             current_node.expand()
@@ -143,18 +118,11 @@ def a_star(draw, grid, start_node, end_node, start_time):
             return True
 
         for neighbour in current_node.neighbours:
-            current_g_score = g_score[current_node] + 1
-
-            if current_g_score < g_score[neighbour]:
+            if neighbour not in visited and not neighbour.is_boundary():
+                visited.add(neighbour)
                 parent_of[neighbour] = current_node
-                g_score[neighbour] = current_g_score
-                f_score[neighbour] = current_g_score + manhattan_distance(neighbour.get_pos_index(),
-                                                                          end_node.get_pos_index())
-                if neighbour not in frontier_set:
-                    insertion_counter += 1
-                    frontier.put((f_score[neighbour], insertion_counter, neighbour))
-                    frontier_set.add(neighbour)
-                    neighbour.visit()
+                stack.append(neighbour)
+                neighbour.visit()
 
         draw()
         pygame.display.update()
@@ -213,6 +181,7 @@ def create_boundaries(grid):
 def main(win, width):
     grid = make_grid(COLS, ROWS, width)
 
+    algorithm_started = False
     is_running = True
     while is_running:
         draw(win, grid, COLS, ROWS, width)
@@ -228,14 +197,15 @@ def main(win, width):
 
             create_boundaries(grid)
 
-            if e.type == pygame.KEYDOWN:
+            if e.type == pygame.KEYDOWN and not algorithm_started:
+                algorithm_started = True
                 counter_start = timer()
                 pygame.display.set_caption("Searching for a Solution ...")
                 for row in grid:
                     for current_node in row:
                         current_node.update_neighbours(grid)
 
-                a_star(lambda: draw(win, grid, COLS, ROWS, width), grid, start_node, end_node, counter_start)
+                dfs(lambda: draw(win, grid, COLS, ROWS, width), start_node, end_node, counter_start)
 
     pygame.quit()
 
