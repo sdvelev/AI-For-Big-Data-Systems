@@ -89,7 +89,7 @@ class Node:
         return self.row < other.row
 
 
-def reconstruct_path(node_path, current, draw, start_time):
+def reconstruct_path(node_path, current, draw, start_time, max_queue_size):
     path_count = 0
 
     while current in node_path:
@@ -100,7 +100,8 @@ def reconstruct_path(node_path, current, draw, start_time):
     end_time = timer()
     working_time = end_time - start_time
     pygame.display.set_caption(f'Time of Greedy Algorithm: {format(working_time, ".2f")}s | '
-                               f'Solution: {path_count + 1} nodes')
+                               f'Solution: {path_count + 1} nodes | '
+                               f'Max frontier size: {max_queue_size}')
 
 
 def manhattan_distance(start, end):
@@ -113,6 +114,7 @@ def greedy_best_first_search(draw, start_node, end_node, start_time):
     frontier = PriorityQueue()
     insertion_counter = 0
     frontier.put((0, insertion_counter, start_node))
+    max_queue_size = 1
     parent_of = {}
 
     frontier_set = {start_node}
@@ -123,7 +125,7 @@ def greedy_best_first_search(draw, start_node, end_node, start_time):
         frontier_set.remove(current_node)
 
         if current_node == end_node:
-            reconstruct_path(parent_of, end_node, draw, start_time)
+            reconstruct_path(parent_of, end_node, draw, start_time, max_queue_size)
             return True
 
         if current_node != start_node:
@@ -138,6 +140,7 @@ def greedy_best_first_search(draw, start_node, end_node, start_time):
                 heuristic = manhattan_distance(neighbor.get_pos_index(), end_node.get_pos_index())
                 frontier.put((heuristic, insertion_counter, neighbor))
                 frontier_set.add(neighbor)
+                max_queue_size = max(max_queue_size, frontier.qsize())
                 neighbor.visit()
 
         draw()

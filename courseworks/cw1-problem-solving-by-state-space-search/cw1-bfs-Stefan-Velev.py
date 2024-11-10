@@ -89,7 +89,7 @@ class Node:
         return self.row < other.row
 
 
-def reconstruct_path(node_path, current, draw, start_time):
+def reconstruct_path(node_path, current, draw, start_time, max_queue_size):
     path_count = 0
 
     while current in node_path:
@@ -100,11 +100,13 @@ def reconstruct_path(node_path, current, draw, start_time):
     end_time = timer()
     working_time = end_time - start_time
     pygame.display.set_caption(f'Time of BFS Algorithm: {format(working_time, ".2f")}s | '
-                               f'Solution: {path_count + 1} nodes')
+                               f'Solution: {path_count + 1} nodes | '
+                               f'Max size of queue: {max_queue_size}')
 
 
 def bfs(draw, start_node, end_node, start_time):
-    queue = deque([start_node])  # Initialize a queue with the start node
+    queue = deque([start_node])
+    max_queue_size = 1
     parent_of = {}
     visited = {start_node}
 
@@ -115,7 +117,7 @@ def bfs(draw, start_node, end_node, start_time):
             current_node.expand()
 
         if current_node == end_node:
-            reconstruct_path(parent_of, end_node, draw, start_time)
+            reconstruct_path(parent_of, end_node, draw, start_time, max_queue_size)
             return True
 
         for neighbour in current_node.neighbours:
@@ -123,6 +125,7 @@ def bfs(draw, start_node, end_node, start_time):
                 visited.add(neighbour)
                 parent_of[neighbour] = current_node
                 queue.append(neighbour)
+                max_queue_size = max(max_queue_size, len(queue))
                 neighbour.visit()
 
         draw()

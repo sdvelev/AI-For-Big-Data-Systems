@@ -88,7 +88,7 @@ class Node:
         return self.row < other.row
 
 
-def reconstruct_path(node_path, current, draw, start_time):
+def reconstruct_path(node_path, current, draw, start_time, max_stack_size):
     path_count = 0
 
     while current in node_path:
@@ -99,11 +99,13 @@ def reconstruct_path(node_path, current, draw, start_time):
     end_time = timer()
     working_time = end_time - start_time
     pygame.display.set_caption(f'Time of DFS Algorithm: {format(working_time, ".2f")}s | '
-                               f'Solution: {path_count + 1} nodes')
+                               f'Solution: {path_count + 1} nodes | '
+                               f'Max stack size: {max_stack_size}')
 
 
 def dfs(draw, start_node, end_node, start_time):
     stack = [start_node]
+    max_stack_size = 1
     parent_of = {}
     visited = {start_node}
 
@@ -114,7 +116,7 @@ def dfs(draw, start_node, end_node, start_time):
             current_node.expand()
 
         if current_node == end_node:
-            reconstruct_path(parent_of, end_node, draw, start_time)
+            reconstruct_path(parent_of, end_node, draw, start_time, max_stack_size)
             return True
 
         for neighbour in current_node.neighbours:
@@ -122,6 +124,7 @@ def dfs(draw, start_node, end_node, start_time):
                 visited.add(neighbour)
                 parent_of[neighbour] = current_node
                 stack.append(neighbour)
+                max_stack_size = max(max_stack_size, len(stack))
                 neighbour.visit()
 
         draw()
