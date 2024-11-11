@@ -21,7 +21,7 @@ COLS = 6
 
 ANIMATION_TIME_MILLISECONDS = 600
 
-pygame.display.set_caption("Problem Solving by State Space Search")
+pygame.display.set_caption("Problem Solving by State Space Search: Greedy")
 win = pygame.display.set_mode((WIDTH, WIDTH))
 clock = pygame.time.Clock()
 
