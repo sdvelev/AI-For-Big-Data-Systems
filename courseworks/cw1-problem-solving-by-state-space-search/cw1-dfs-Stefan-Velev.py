@@ -8,7 +8,7 @@ COLOUR_BORDERS = (0, 0, 0)
 BORDER_THICKNESS = 2
 COLOUR_START_NODE = (156, 216, 142)
 COLOUR_END_NODE = (17, 111, 45)
-COLOUR_BOUNDARY = (255, 0, 0)
+COLOUR_OBSTACLE = (255, 0, 0)
 COLOUR_VISITED_PATH = (255, 218, 149)
 COLOUR_EXPANDED_PATH = (194, 147, 3)
 COLOUR_SOLUTION_PATH = (59, 234, 19)
@@ -51,8 +51,8 @@ class Node:
     def visit(self):
         self.colour = COLOUR_VISITED_PATH
 
-    def make_boundary(self):
-        self.colour = COLOUR_BOUNDARY
+    def make_obstacle(self):
+        self.colour = COLOUR_OBSTACLE
 
     def make_start_node(self):
         self.colour = COLOUR_START_NODE
@@ -63,8 +63,8 @@ class Node:
     def make_solution_path(self):
         self.colour = COLOUR_SOLUTION_PATH
 
-    def is_boundary(self):
-        return self.colour == COLOUR_BOUNDARY
+    def is_obstacle(self):
+        return self.colour == COLOUR_OBSTACLE
 
     def draw(self, win):
         pygame.draw.rect(win, self.colour, (self.x, self.y, self.width, self.height))
@@ -72,27 +72,27 @@ class Node:
     def update_neighbours(self, grid):
         self.neighbours = []
 
-        if self.col < self.total_cols - 1 and not grid[self.row][self.col + 1].is_boundary():
+        if self.col < self.total_cols - 1 and not grid[self.row][self.col + 1].is_obstacle():
             self.neighbours.append(grid[self.row][self.col + 1])
 
-        if self.col > 0 and not grid[self.row][self.col - 1].is_boundary():
+        if self.col > 0 and not grid[self.row][self.col - 1].is_obstacle():
             self.neighbours.append(grid[self.row][self.col - 1])
 
-        if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_boundary():
+        if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_obstacle():
             self.neighbours.append(grid[self.row + 1][self.col])
 
-        if self.row > 0 and not grid[self.row - 1][self.col].is_boundary():
+        if self.row > 0 and not grid[self.row - 1][self.col].is_obstacle():
             self.neighbours.append(grid[self.row - 1][self.col])
 
     def __lt__(self, other):
         return self.row < other.row
 
 
-def reconstruct_path(node_path, current, draw, start_time, max_stack_size):
+def reconstruct_path(parent_of, current, draw, start_time, max_stack_size):
     path_count = 0
 
-    while current in node_path:
-        current = node_path[current]
+    while current in parent_of:
+        current = parent_of[current]
         current.make_solution_path()
         path_count += 1
         draw()
@@ -120,7 +120,7 @@ def dfs(draw, start_node, end_node, start_time):
             return True
 
         for neighbour in current_node.neighbours:
-            if neighbour not in visited and not neighbour.is_boundary():
+            if neighbour not in visited and not neighbour.is_obstacle():
                 visited.add(neighbour)
                 parent_of[neighbour] = current_node
                 stack.append(neighbour)
@@ -167,19 +167,19 @@ def draw(win, grid, rows, cols, width):
     draw_grid(win, rows, cols, width)
     pygame.display.update()
 
-def create_boundaries(grid):
-    boundary_1 = grid[1][0]
-    boundary_1.make_boundary()
-    boundary_2 = grid[1][2]
-    boundary_2.make_boundary()
-    boundary_3 = grid[3][2]
-    boundary_3.make_boundary()
-    boundary_4 = grid[1][3]
-    boundary_4.make_boundary()
-    boundary_5 = grid[4][3]
-    boundary_5.make_boundary()
-    boundary_6 = grid[4][4]
-    boundary_6.make_boundary()
+def create_obstacles(grid):
+    obstacle_1 = grid[1][0]
+    obstacle_1.make_obstacle()
+    obstacle_2 = grid[1][2]
+    obstacle_2.make_obstacle()
+    obstacle_3 = grid[3][2]
+    obstacle_3.make_obstacle()
+    obstacle_4 = grid[1][3]
+    obstacle_4.make_obstacle()
+    obstacle_5 = grid[4][3]
+    obstacle_5.make_obstacle()
+    obstacle_6 = grid[4][4]
+    obstacle_6.make_obstacle()
 
 def main(win, width):
     grid = make_grid(COLS, ROWS, width)
@@ -198,7 +198,7 @@ def main(win, width):
             start_node.make_start_node()
             end_node.make_end_node()
 
-            create_boundaries(grid)
+            create_obstacles(grid)
 
             if e.type == pygame.KEYDOWN and not algorithm_started:
                 algorithm_started = True
