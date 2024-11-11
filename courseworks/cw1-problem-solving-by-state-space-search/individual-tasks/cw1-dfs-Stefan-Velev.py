@@ -1,6 +1,4 @@
-
 import pygame
-from queue import PriorityQueue
 from timeit import default_timer as timer
 
 
@@ -21,7 +19,7 @@ COLS = 6
 
 ANIMATION_TIME_MILLISECONDS = 600
 
-pygame.display.set_caption("Problem Solving by State Space Search: Greedy Search")
+pygame.display.set_caption("Problem Solving by State Space Search: DFS")
 win = pygame.display.set_mode((WIDTH, WIDTH))
 clock = pygame.time.Clock()
 
@@ -89,7 +87,7 @@ class Node:
         return self.row < other.row
 
 
-def reconstruct_path(parent_of, current, draw, start_time, max_queue_size):
+def reconstruct_path(parent_of, current, draw, start_time, max_stack_size):
     path_count = 0
 
     while current in parent_of:
@@ -99,49 +97,35 @@ def reconstruct_path(parent_of, current, draw, start_time, max_queue_size):
         draw()
     end_time = timer()
     working_time = end_time - start_time
-    pygame.display.set_caption(f'Time of Greedy Algorithm: {format(working_time, ".2f")}s | '
+    pygame.display.set_caption(f'Time of DFS Algorithm: {format(working_time, ".2f")}s | '
                                f'Solution: {path_count + 1} nodes | '
-                               f'Max frontier size: {max_queue_size}')
+                               f'Max stack size: {max_stack_size}')
 
 
-def manhattan_distance(start, end):
-    x1, y1 = start
-    x2, y2 = end
-    return abs(x1 - x2) + abs(y1 - y2)
-
-
-def greedy_best_first_search(draw, start_node, end_node, start_time):
-    frontier = PriorityQueue()
-    insertion_counter = 0
-    frontier.put((0, insertion_counter, start_node))
-    max_queue_size = 1
+def dfs(draw, start_node, end_node, start_time):
+    stack = [start_node]
+    max_stack_size = 1
     parent_of = {}
+    visited = {start_node}
 
-    frontier_set = {start_node}
-    visited = set()
-
-    while not frontier.empty():
-        current_node = frontier.get()[2]
-        frontier_set.remove(current_node)
-
-        if current_node == end_node:
-            reconstruct_path(parent_of, end_node, draw, start_time, max_queue_size)
-            return True
+    while stack:
+        current_node = stack.pop()
 
         if current_node != start_node:
             current_node.expand()
 
-        visited.add(current_node)
+        for neighbour in current_node.neighbours:
+            if neighbour == end_node:
+                parent_of[neighbour] = current_node
+                reconstruct_path(parent_of, end_node, draw, start_time, max_stack_size)
+                return True
 
-        for neighbor in current_node.neighbours:
-            if neighbor not in frontier_set and neighbor not in visited and not neighbor.is_obstacle():
-                parent_of[neighbor] = current_node
-                insertion_counter += 1
-                heuristic = manhattan_distance(neighbor.get_pos_index(), end_node.get_pos_index())
-                frontier.put((heuristic, insertion_counter, neighbor))
-                frontier_set.add(neighbor)
-                max_queue_size = max(max_queue_size, frontier.qsize())
-                neighbor.visit()
+            if neighbour not in visited and not neighbour.is_obstacle():
+                visited.add(neighbour)
+                parent_of[neighbour] = current_node
+                stack.append(neighbour)
+                max_stack_size = max(max_stack_size, len(stack))
+                neighbour.visit()
 
         draw()
         pygame.display.update()
@@ -184,18 +168,12 @@ def draw(win, grid, rows, cols, width):
     pygame.display.update()
 
 def create_obstacles(grid):
-    obstacle_1 = grid[1][0]
-    obstacle_1.make_obstacle()
-    obstacle_2 = grid[1][2]
-    obstacle_2.make_obstacle()
-    obstacle_3 = grid[3][2]
-    obstacle_3.make_obstacle()
-    obstacle_4 = grid[1][3]
-    obstacle_4.make_obstacle()
-    obstacle_5 = grid[4][3]
-    obstacle_5.make_obstacle()
-    obstacle_6 = grid[4][4]
-    obstacle_6.make_obstacle()
+    grid[1][0].make_obstacle()
+    grid[1][2].make_obstacle()
+    grid[3][2].make_obstacle()
+    grid[1][3].make_obstacle()
+    grid[4][3].make_obstacle()
+    grid[4][4].make_obstacle()
 
 def main(win, width):
     grid = make_grid(COLS, ROWS, width)
@@ -219,12 +197,12 @@ def main(win, width):
             if e.type == pygame.KEYDOWN and not algorithm_started:
                 algorithm_started = True
                 counter_start = timer()
-                pygame.display.set_caption("Searching for a Solution with Greedy Search ...")
+                pygame.display.set_caption("Searching for a Solution with DFS ...")
                 for row in grid:
                     for current_node in row:
                         current_node.update_neighbours(grid)
 
-                greedy_best_first_search(lambda: draw(win, grid, COLS, ROWS, width), start_node, end_node, counter_start)
+                dfs(lambda: draw(win, grid, COLS, ROWS, width), start_node, end_node, counter_start)
 
     pygame.quit()
 

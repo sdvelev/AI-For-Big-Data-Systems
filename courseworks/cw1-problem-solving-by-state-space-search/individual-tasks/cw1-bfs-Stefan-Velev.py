@@ -1,6 +1,6 @@
-
 import pygame
 from timeit import default_timer as timer
+from collections import deque
 
 
 COLOUR_EMPTY_NODE = (176, 192, 238)
@@ -20,7 +20,7 @@ COLS = 6
 
 ANIMATION_TIME_MILLISECONDS = 600
 
-pygame.display.set_caption("Problem Solving by State Space Search: DFS")
+pygame.display.set_caption("Problem Solving by State Space Search: BFS")
 win = pygame.display.set_mode((WIDTH, WIDTH))
 clock = pygame.time.Clock()
 
@@ -88,7 +88,7 @@ class Node:
         return self.row < other.row
 
 
-def reconstruct_path(parent_of, current, draw, start_time, max_stack_size):
+def reconstruct_path(parent_of, current, draw, start_time, max_queue_size):
     path_count = 0
 
     while current in parent_of:
@@ -98,33 +98,34 @@ def reconstruct_path(parent_of, current, draw, start_time, max_stack_size):
         draw()
     end_time = timer()
     working_time = end_time - start_time
-    pygame.display.set_caption(f'Time of DFS Algorithm: {format(working_time, ".2f")}s | '
+    pygame.display.set_caption(f'Time of BFS Algorithm: {format(working_time, ".2f")}s | '
                                f'Solution: {path_count + 1} nodes | '
-                               f'Max stack size: {max_stack_size}')
+                               f'Max size of queue: {max_queue_size}')
 
 
-def dfs(draw, start_node, end_node, start_time):
-    stack = [start_node]
-    max_stack_size = 1
+def bfs(draw, start_node, end_node, start_time):
+    queue = deque([start_node])
+    max_queue_size = 1
     parent_of = {}
     visited = {start_node}
 
-    while stack:
-        current_node = stack.pop()
+    while queue:
+        current_node = queue.popleft()
 
         if current_node != start_node:
             current_node.expand()
 
-        if current_node == end_node:
-            reconstruct_path(parent_of, end_node, draw, start_time, max_stack_size)
-            return True
-
         for neighbour in current_node.neighbours:
+            if neighbour == end_node:
+                parent_of[neighbour] = current_node
+                reconstruct_path(parent_of, end_node, draw, start_time, max_queue_size)
+                return True
+
             if neighbour not in visited and not neighbour.is_obstacle():
                 visited.add(neighbour)
                 parent_of[neighbour] = current_node
-                stack.append(neighbour)
-                max_stack_size = max(max_stack_size, len(stack))
+                queue.append(neighbour)
+                max_queue_size = max(max_queue_size, len(queue))
                 neighbour.visit()
 
         draw()
@@ -132,7 +133,6 @@ def dfs(draw, start_node, end_node, start_time):
         pygame.time.delay(ANIMATION_TIME_MILLISECONDS)
 
     return False
-
 
 def make_grid(rows, cols, total_width):
     grid = []
@@ -167,19 +167,13 @@ def draw(win, grid, rows, cols, width):
     draw_grid(win, rows, cols, width)
     pygame.display.update()
 
-def create_obstacles(grid):
-    obstacle_1 = grid[1][0]
-    obstacle_1.make_obstacle()
-    obstacle_2 = grid[1][2]
-    obstacle_2.make_obstacle()
-    obstacle_3 = grid[3][2]
-    obstacle_3.make_obstacle()
-    obstacle_4 = grid[1][3]
-    obstacle_4.make_obstacle()
-    obstacle_5 = grid[4][3]
-    obstacle_5.make_obstacle()
-    obstacle_6 = grid[4][4]
-    obstacle_6.make_obstacle()
+def create_obstacle(grid):
+    grid[1][0].make_obstacle()
+    grid[1][2].make_obstacle()
+    grid[3][2].make_obstacle()
+    grid[1][3].make_obstacle()
+    grid[4][3].make_obstacle()
+    grid[4][4].make_obstacle()
 
 def main(win, width):
     grid = make_grid(COLS, ROWS, width)
@@ -198,17 +192,17 @@ def main(win, width):
             start_node.make_start_node()
             end_node.make_end_node()
 
-            create_obstacles(grid)
+            create_obstacle(grid)
 
             if e.type == pygame.KEYDOWN and not algorithm_started:
                 algorithm_started = True
                 counter_start = timer()
-                pygame.display.set_caption("Searching for a Solution with DFS ...")
+                pygame.display.set_caption("Searching for a Solution with BFS ...")
                 for row in grid:
                     for current_node in row:
                         current_node.update_neighbours(grid)
 
-                dfs(lambda: draw(win, grid, COLS, ROWS, width), start_node, end_node, counter_start)
+                bfs(lambda: draw(win, grid, COLS, ROWS, width), start_node, end_node, counter_start)
 
     pygame.quit()
 
