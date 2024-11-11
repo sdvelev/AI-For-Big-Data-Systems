@@ -203,7 +203,7 @@ def main(win, width):
             if e.type == pygame.KEYDOWN and not algorithm_started:
                 algorithm_started = True
                 counter_start = timer()
-                pygame.display.set_caption("Searching for a Solution ...")
+                pygame.display.set_caption("Searching for a Solution with DFS ...")
                 for row in grid:
                     for current_node in row:
                         current_node.update_neighbours(grid)

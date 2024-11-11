@@ -21,7 +21,7 @@ COLS = 6
 
 ANIMATION_TIME_MILLISECONDS = 600
 
-pygame.display.set_caption("Problem Solving by State Space Search: Greedy")
+pygame.display.set_caption("Problem Solving by State Space Search: Greedy Search")
 win = pygame.display.set_mode((WIDTH, WIDTH))
 clock = pygame.time.Clock()
 
@@ -219,7 +219,7 @@ def main(win, width):
             if e.type == pygame.KEYDOWN and not algorithm_started:
                 algorithm_started = True
                 counter_start = timer()
-                pygame.display.set_caption("Searching for a Solution ...")
+                pygame.display.set_caption("Searching for a Solution with Greedy Search ...")
                 for row in grid:
                     for current_node in row:
                         current_node.update_neighbours(grid)
