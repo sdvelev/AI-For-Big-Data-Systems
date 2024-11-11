@@ -1,4 +1,3 @@
-
 import math
 import pygame
 from timeit import default_timer as timer
@@ -22,7 +21,7 @@ COLS = 6
 
 ANIMATION_TIME_MILLISECONDS = 600
 
-pygame.display.set_caption("Problem Solving by State Space Search: A*")
+pygame.display.set_caption("Problem Solving by State Space Search: A* (Euclidean distance)")
 win = pygame.display.set_mode((WIDTH, WIDTH))
 clock = pygame.time.Clock()
 
@@ -89,21 +88,10 @@ class Node:
     def __lt__(self, other):
         return self.row < other.row
 
-
-def manhattan_distance(start, end):
-    x1, y1 = start
-    x2, y2 = end
-    return abs(x1 - x2) + abs(y1 - y2)
-
 def euclidean_distance(start, goal):
     x1, y1 = start
     x2, y2 = goal
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-
-def chebyshev_distance(start, goal):
-    x1, y1 = start
-    x2, y2 = goal
-    return max(abs(x2 - x1), abs(y2 - y1))
 
 def reconstruct_path(parent_of, current, draw, start_time, max_frontier_size):
     path_count = 0
@@ -115,7 +103,7 @@ def reconstruct_path(parent_of, current, draw, start_time, max_frontier_size):
         draw()
     end_time = timer()
     working_time = end_time - start_time
-    pygame.display.set_caption(f'Time of A* Algorithm: {format(working_time, ".2f")}s | '
+    pygame.display.set_caption(f'Time of A* Algorithm (Euclidean distance): {format(working_time, ".2f")}s | '
                                f'Solution: {path_count + 1} nodes | '
                                f'Max size of frontier: {max_frontier_size}')
 
@@ -130,7 +118,7 @@ def a_star(draw, grid, start_node, end_node, start_time):
     g_score[start_node] = 0
 
     f_score = {current_neighbour: float("inf") for row in grid for current_neighbour in row}
-    f_score[start_node] = manhattan_distance(start_node.get_pos_index(), end_node.get_pos_index())
+    f_score[start_node] = euclidean_distance(start_node.get_pos_index(), end_node.get_pos_index())
 
 
     frontier_set = {start_node}
@@ -151,7 +139,7 @@ def a_star(draw, grid, start_node, end_node, start_time):
             if current_g_score < g_score[neighbour]:
                 parent_of[neighbour] = current_node
                 g_score[neighbour] = current_g_score
-                f_score[neighbour] = current_g_score + manhattan_distance(neighbour.get_pos_index(),
+                f_score[neighbour] = current_g_score + euclidean_distance(neighbour.get_pos_index(),
                                                                           end_node.get_pos_index())
                 if neighbour not in frontier_set:
                     insertion_counter += 1
@@ -201,18 +189,12 @@ def draw(win, grid, rows, cols, width):
     pygame.display.update()
 
 def create_obstacles(grid):
-    obstacle_1 = grid[1][0]
-    obstacle_1.make_obstacle()
-    obstacle_2 = grid[1][2]
-    obstacle_2.make_obstacle()
-    obstacle_3 = grid[3][2]
-    obstacle_3.make_obstacle()
-    obstacle_4 = grid[1][3]
-    obstacle_4.make_obstacle()
-    obstacle_5 = grid[4][3]
-    obstacle_5.make_obstacle()
-    obstacle_6 = grid[4][4]
-    obstacle_6.make_obstacle()
+    grid[1][0].make_obstacle()
+    grid[1][2].make_obstacle()
+    grid[3][2].make_obstacle()
+    grid[1][3].make_obstacle()
+    grid[4][3].make_obstacle()
+    grid[4][4].make_obstacle()
 
 def main(win, width):
     grid = make_grid(COLS, ROWS, width)
@@ -236,7 +218,7 @@ def main(win, width):
             if e.type == pygame.KEYDOWN and not algorithm_started:
                 algorithm_started = True
                 counter_start = timer()
-                pygame.display.set_caption("Searching for a Solution with A* ...")
+                pygame.display.set_caption("Searching for a Solution with A* (Euclidean distance) ...")
                 for row in grid:
                     for current_node in row:
                         current_node.update_neighbours(grid)
