@@ -62,3 +62,98 @@ crime_kb = FolKB(
                'American(West)',
                'Enemy(Nono, America)'
                ]))
+
+maze_kb = FolKB(
+    map(expr, ['Path(C00, C10)',
+                'Path(C10, C11)',
+                'Path(C10, C20)',
+                'Path(C20, C30)',
+                'Path(C30, C40)',
+                'Path(C40, C41)',
+                'Path(C41, C42)',
+                'Path(C42, C43)',
+                'Path(C42, C32)',
+                'Path(C43, C33)',
+                'Path(C33, C32)',
+                'Path(C32, C22)',
+                'Path(C22, C12)',
+                'Path(C11, C12)',
+                'Path(C12, C02)',
+                'Path(C12, C13)',
+                'Path(C02, C03)',
+                'Path(C13, C03)',
+                'Path(C13, C14)',
+                'Path(C03, C04)',
+                'Path(C04, C05)',
+                'Path(C04, C14)',
+                'Path(C14, C15)',
+                'Path(C14, C24)',
+                'Path(C24, C25)',
+                'Path(C05, C15)',
+                'Path(C15, C25)',
+                'Path(C25, C35)',
+                'Path(C35, C45)',
+                'Start(C00)',
+                #'Path(x, y) ==> Path(y, x)',
+                'Path(x, y) ==> Reachable(x, y)',
+                'Reachable(x, y) & Reachable(y, z) & At(y) ==> Reachable(x, z)',
+                #'PathTaken'
+                'Start(x) ==> At(x)',
+                'At(x) & Reachable(x, y) ==> At(y)',
+                # 'At(y) & Reachable(x, y) ==> At(x)',
+                'At(C45) ==> End(C45)',
+
+                'Path(x, y) & End(y) ==> PathToEnd(x, y)',
+                'Path(x, z) & PathToEnd(z) ==> PathToEnd(x, y)'
+
+                #'PathToEnd(x, y) ==> (Path(x, y) & Reachable(y, End))',
+                #'PathToEnd(x, y) ==> (Path(x, z) & PathToEnd(z, y))'
+               ]))
+
+maze_kb2 = FolKB(
+    map(expr, ['Path(C00, C10)',
+                'Path(C10, C11)',
+                'Path(C10, C20)',
+                'Path(C20, C30)',
+                'Path(C30, C40)',
+                'Path(C40, C41)',
+                'Path(C41, C42)',
+                'Path(C42, C43)',
+                'Path(C42, C32)',
+                'Path(C43, C33)',
+                'Path(C33, C32)',
+                'Path(C32, C22)',
+                'Path(C22, C12)',
+                'Path(C11, C12)',
+                'Path(C12, C02)',
+                'Path(C12, C13)',
+                'Path(C02, C03)',
+                'Path(C13, C03)',
+                'Path(C13, C14)',
+                'Path(C03, C04)',
+                'Path(C04, C05)',
+                'Path(C04, C14)',
+                'Path(C14, C15)',
+                'Path(C14, C24)',
+                'Path(C24, C25)',
+                'Path(C05, C15)',
+                'Path(C15, C25)',
+                'Path(C25, C35)',
+                'Path(C35, C45)',
+                'Start(C00)',
+                #'Path(x, y) ==> Path(y, x)',
+                # 'Path(x, y) ==> Path(x, y)',
+                # 'Reachable(x, y) & Reachable(y, z) & At(y) ==> Reachable(x, z)',
+                #'PathTaken'
+                'Start(x) ==> At(x)',
+                'At(C45) ==> End(C45)',
+                'Path(x, y) & At(x) ==> At(y)',
+                # 'At(y) & Reachable(x, y) ==> At(x)',
+
+
+                # 'Path(x, y) & End(y) ==> PathToEnd(x, y)',
+                # 'Path(x, z) & PathToEnd(z) ==> PathToEnd(x, y)'
+
+                #'PathToEnd(x, y) ==> (Path(x, y) & Reachable(y, End))',
+                #'PathToEnd(x, y) ==> (Path(x, z) & PathToEnd(z, y))'
+               ]))
