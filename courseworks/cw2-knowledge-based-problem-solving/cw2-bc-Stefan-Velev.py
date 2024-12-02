@@ -20,6 +20,7 @@ COLS = 6
 ANIMATION_TIME_MILLISECONDS = 600
 
 PROLOG_FILE_NAME = "cw2-bc-Stefan-Velev.pl"
+PROLOG_QUERY = "path(Path)."
 
 pygame.display.set_caption("Knowledge-based Problem Solving: FOL")
 win = pygame.display.set_mode((WIDTH, WIDTH))
@@ -92,7 +93,7 @@ def colourise(draw, grid):
     prolog = Prolog()
     prolog.consult(PROLOG_FILE_NAME)
 
-    result_list = list(prolog.query("path(Path)."))[0]
+    result_list = list(prolog.query(PROLOG_QUERY))[0]
 
     for current_cell in result_list['Path']:
         grid[int(current_cell[2])][int(current_cell[1])].make_solution_path()
