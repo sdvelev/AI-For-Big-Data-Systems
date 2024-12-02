@@ -67,7 +67,10 @@ optimal_path(Visit, Path, PathLength) :-
     compare_path_length(PathList, PrintPath, OptimalPath),
     write(OptimalPath), nl.
 
-all_optimal_paths(Visit, Path, PathLength) :-
+optimal_path(Path) :-
+    optimal_path([], Path, _).
+
+all_optimal_paths(Visit, PathListOptimal, PathLength) :-
     nb_setval(globalMinPath, 1000),
     PathLength = 1,
     findall(Path, (Visit = [], inter_path(c00, c45, Visit, Path, PathLength)), PathList),
