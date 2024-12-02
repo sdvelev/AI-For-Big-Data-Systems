@@ -34,9 +34,9 @@ direct_path(c35, c45).
 move(X, Y) :- direct_path(X, Y).
 move(X, Y) :- direct_path(Y, X).
 
-path() :- path([], _).
+path() :- path(_).
 
-inter_path(S, F, Visit, [S, F]) :-
+inter_path(S, F, _, [S, F]) :-
     move(S, F).
 
 inter_path(S, F, Visit, [S | Rest]) :-
@@ -45,7 +45,7 @@ inter_path(S, F, Visit, [S | Rest]) :-
     not(member(Z, Visit)),
     inter_path(Z, F, [S | Visit], Rest).
 
-path(Visit, Path) :-
+path(Path) :-
     inter_path(c00, c45, [], Path),
     write(Path), nl.
 
