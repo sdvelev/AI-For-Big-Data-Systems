@@ -104,7 +104,6 @@ def colourise(draw, grid):
     pygame.display.set_caption('Solution found with FOL')
     return True
 
-
 def make_grid(rows, cols, total_width):
     grid = []
     height = total_width // rows

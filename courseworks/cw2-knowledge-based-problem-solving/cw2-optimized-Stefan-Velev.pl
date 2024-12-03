@@ -52,8 +52,7 @@ inter_path(S, F, Visit, [S | Rest], PathLength) :-
     PathLengthIncreased =< CurrentMinPath,
     inter_path(Z, F, [S | Visit], Rest, PathLengthIncreased).
 
-% Selects paths that are of a given length
-compare_path_length(PathList, PathLength, OptimalPath) :-
+find_path_of_length(PathList, PathLength, OptimalPath) :-
     member(A, PathList),
     length(A, CurrentPathLength),
     CurrentPathLength = PathLength,
@@ -64,7 +63,7 @@ optimal_path(Visit, Path, PathLength) :-
     PathLength = 1,
     findall(Path, (Visit = [], inter_path(c00, c45, Visit, Path, PathLength)), PathList),
     nb_getval(globalMinPath, PrintPath),
-    compare_path_length(PathList, PrintPath, OptimalPath),
+    find_path_of_length(PathList, PrintPath, OptimalPath),
     write(OptimalPath), nl.
 
 optimal_path(Path) :-
@@ -75,5 +74,5 @@ all_optimal_paths(Visit, PathListOptimal, PathLength) :-
     PathLength = 1,
     findall(Path, (Visit = [], inter_path(c00, c45, Visit, Path, PathLength)), PathList),
     nb_getval(globalMinPath, PrintPath),
-    findall(OptimalPath, compare_path_length(PathList, PrintPath, OptimalPath), PathListOptimal),
+    findall(OptimalPath, find_path_of_length(PathList, PrintPath, OptimalPath), PathListOptimal),
     write(PathListOptimal), nl.
